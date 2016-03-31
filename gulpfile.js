@@ -1,11 +1,16 @@
 'use strict';
 
+// for Metalsmith
+require('harmonize')();
+
 var beautify = require('metalsmith-beautify');
+var connect = require('gulp-connect');
 var gulp = require('gulp');
 var headings = require('metalsmith-headings');
 var markdown = require('metalsmith-markdown');
 var marked = require('metalsmith-markdown/node_modules/marked');
 var Metalsmith = require('metalsmith');
+var minimist = require('minimist');
 var path = require('path');
 var plugins = require('./lib/plugins');
 var util = require('util');
@@ -21,6 +26,13 @@ var TOC_HEADINGS = ['h2, h3'];
 // location of Swig views
 var VIEW_PATH = path.join(__dirname, 'views');
 
+var knownCliOptions = {
+    string: 'port',
+    default: {
+        port: '7878'
+    }
+};
+var cliOptions = minimist(process.argv.slice(2), knownCliOptions);
 var swigOptions = {
     basepath: VIEW_PATH,
     locals: require('./lib/locals')
@@ -57,7 +69,7 @@ function markedFactory() {
     return renderer;
 }
 
-gulp.task('html', function() {
+gulp.task('html', function(cb) {
     return new Metalsmith(__dirname)
         // basic options
         .clean(false)
@@ -71,7 +83,7 @@ gulp.task('html', function() {
         }))
         .use(plugins.metadata({
             destination: OUTPUT_PATH,
-            redirects: require(path.resolve(__dirname, 'data/redirects.json'))
+            tocData: require('./data/toc.json')
         }))
         .use(markdown({
             gfm: true,
@@ -86,11 +98,10 @@ gulp.task('html', function() {
         }))
         .use(plugins.buildHeadingTree(TOC_HEADINGS))
         .use(plugins.addTemplateName())
-        .use(plugins.addJsdocTags())
+        .use(plugins.addJsdocTagMetadata())
         .use(plugins.adjustMetadata())
-        .use(plugins.addIndexData())
         .use(plugins.swig(swigOptions))
-        .use(plugins.buildRedirects())
+        .use(plugins.buildRedirects(require('./data/redirects.json')))
         .use(plugins.copyStaticFile({
             source: path.join(__dirname, 'bower_components/html5shiv/dist/html5shiv.min.js'),
             destination: path.join(__dirname, 'scripts/html5shiv.min.js')
@@ -113,7 +124,16 @@ gulp.task('html', function() {
         }))
 
         // go!
-        .build();
+        .build(cb);
 });
+
+gulp.task('server', function() {
+    connect.server({
+        port: cliOptions.port,
+        root: path.resolve(__dirname, OUTPUT_PATH)
+    });
+});
+
+gulp.task('preview', ['html', 'server']);
 
 gulp.task('default', ['html']);

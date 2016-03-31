@@ -2,15 +2,19 @@
 tag: module
 description: Document a JavaScript module.
 related:
-    - howto-commonjs-modules.html
     - tags-exports.html
+    - howto-commonjs-modules.html
+    - howto-amd-modules.html
 ---
 
 ## Syntax
 
-`@module [[{<type>}] <ModuleName>]`
+`@module [[{<type>}] <moduleName>]`
 
-Note: If you provide a type, you _must_ also provide a name.`
+In JSDoc 3.3.0 and later, `<moduleName>` may include the `module:` prefix. In previous versions, you
+must omit this prefix.
+
+Note: If you provide a type, you _must_ also provide a name.
 
 
 ## Overview
@@ -38,7 +42,7 @@ jsdoc -r src/     # module name 'test'
 ```
 {% endexample %}
 
-[link-tag]: tags-link.html
+[link-tag]: tags-inline-link.html
 [see-tag]: tags-see.html
 
 

@@ -20,7 +20,8 @@ file, this is what JSDoc will use:
 ```js
 {
     "tags": {
-        "allowUnknownTags": true
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
     },
     "source": {
         "includePattern": ".+\\.js(doc)?$",
@@ -37,20 +38,23 @@ file, this is what JSDoc will use:
 
 This means:
 
++ JSDoc allows you to use unrecognized tags (`tags.allowUnknownTags`);
++ Both standard JSDoc tags and [Closure Compiler tags][closure-tags] are enabled
+(`tags.dictionaries`);
 + Only files ending in ".js" and ".jsdoc" will be processed (`source.includePattern`);
 + Any file starting with an underscore or in a directory starting with an underscore will be
 _ignored_ (`source.excludePattern`);
 + No plugins are loaded (`plugins`);
-+ @link tags are rendered as-is (i.e. in plain text as opposed to monospace)
-(`templates.cleverLinks`, `templates.monospaceLinks`).
++ `@link` tags are rendered in plain text (`templates.cleverLinks`, `templates.monospaceLinks`).
 
-These options and others will be further explained on this page. A full example is provided at the
-end.
+These options and others will be further explained on this page.
 
 Further settings may be added to the file as requested by various plugins or templates (for example,
 the [Markdown plugin][markdown] can be configured by including a "markdown" key).
 
+[closure-tags]: https://developers.google.com/closure/compiler/docs/js-for-compiler#tags
 [markdown]: plugins-markdown.html
+
 
 ## Specifying input files
 
@@ -73,7 +77,8 @@ your own .json file.)
 + `source.include`: an optional array of paths that JSDoc should generate documentation for. The
 paths given to JSDoc on the command line are combined with these to form the set of files JSDoc will
 scan. Recall that if a path is a directory, the `-r` option may be used to recurse into it.
-+ `source.exclude`: an optional array of paths that JSDoc should ignore.
++ `source.exclude`: an optional array of paths that JSDoc should ignore. In JSDoc 3.3.0 and later,
+this array may include subdirectories of the paths in `source.include`.
 + `source.includePattern`: an optional string, interpreted as a regular expression. If present, all
 files _must_ match this in order to be scanned by JSDoc. By default this is set to
 ".+&#92;.js(doc)?$", meaning that only files that end in `.js` or `.jsdoc` will be scanned.
@@ -153,6 +158,7 @@ The reasoning is as follows:
 3. Apply `source.excludePattern`, which will remove `myProject/_private/a.js`.
 4. Apply `source.exclude`, which will remove `myProject/lib/ignore.js`.
 
+
 ## Incorporating command-line options into the configuration file
 
 It is possible to put many of JSDoc's [command-line options][options] into the configuration file
@@ -162,29 +168,15 @@ value being the option's value.
 
 [options]: about-commandline.html
 
-{% example "Example" %}
+{% example "Command-line options set in the configuration file" %}
 
 ```js
-// You must remove the comments before adding these options to your .json file
 "opts": {
     "template": "templates/default",  // same as -t templates/default
     "encoding": "utf8",               // same as -e utf8
     "destination": "./out/",          // same as -d ./out/
     "recurse": true,                  // same as -r
     "tutorials": "path/to/tutorials", // same as -u path/to/tutorials
-    "query": "value",                 // same as -q value
-    "private": true,                  // same as -p
-    "lenient": true,                  // same as -l
-    // these can also be included, though you probably wouldn't bother
-    // putting these in conf.json rather than the command line as they cause
-    // JSDoc not to produce documentation.
-    "version": true,                  // same as --version or -v
-    "explain": true,                  // same as -X
-    "test": true,                     // same as -T
-    "help": true,                     // same as --help or -h
-    "verbose": true,                  // same as --verbose, only relevant to tests.
-    "match": "value",                 // same as --match value, only relevant to tests.
-    "nocolor": true                   // same as --nocolor, only relevant to tests
 }
 ```
 {% endexample %}
@@ -204,14 +196,15 @@ precedence.
 
 To enable plugins, add their paths (relative to the JSDoc folder) into the `plugins` array.
 
-For example, the following will include the Markdown plugin and verbose output plugin:
+For example, the following will include the Markdown plugin, which converts Markdown-formatted text
+to HTML, and the "summarize" plugin, which autogenerates a summary for each doclet:
 
 {% example %}
 
 ```
 "plugins": [
     "plugins/markdown",
-    "plugins/verboseOutput"
+    "plugins/summarize"
 ]
 ```
 {% endexample %}
@@ -228,8 +221,9 @@ The Markdown plugin can be configured by including a "markdown" object into conf
 
 ## Output style configuration
 
-The options in `templates` affect how JSDoc's output looks (although custom templates may not be
-affected by these, depending on how they are coded).
+The options in `templates` affect the appearance and content of generated documentation. Custom
+templates may not implement all of these options. See [Configuring JSDoc's Default
+Template][default-template] for additional options that the default template supports.
 
 {% example %}
 
@@ -254,68 +248,44 @@ Also, there are {@linkcode ...} and {@linkplain ...} if one wishes to force the 
 in monospace or normal font respectively (see [@link, @linkcode and @linkplain][link-tag] for
 further information).
 
-[link-tag]: tags-link.html
+[default-template]: about-configuring-default-template.html
+[link-tag]: tags-inline-link.html
 
-### Miscellaneous
 
-The `tags.allowUnknownTags` property determines whether tags unrecognised by JSDoc are permitted. If
-this is false and JSDoc encounters a tag it does not recognise (e.g. `@foobar`), it will throw an
-error. Otherwise, it will just ignore the tag.
+## Tags and tag dictionaries
 
-By default, it is true.
+The options in `tags` control which JSDoc tags are allowed and how each tag is interpreted.
+
 
 {% example %}
 
-```
-"tags": {
-    "allowUnknownTags": true
-}
-```
-{% endexample %}
-
-## Example with all configuration options
-
-Here is an example conf.json showing all possible configuration options native to the base JSDoc,
-along with their default values.
-
-{% example "A conf.json showcasing all the configuration options to base JSDoc" %}
-
 ```js
-// You must remove the comments before adding these options to your .json file
-{
 "tags": {
-    "allowUnknownTags": true
-},
-"source": {
-    "include": [],
-    "exclude": [],
-    "includePattern": ".+\\.js(doc)?$",
-    "excludePattern": "(^|\\/|\\\\)_"
-},
-"plugins": [],
-"templates": {
-    "cleverLinks": false,
-    "monospaceLinks": false
-},
-"opts": {
-    "template": "templates/default",  // same as -t templates/default
-    "encoding": "utf8",               // same as -e utf8
-    "destination": "./out/",          // same as -d ./out/
-    "recurse": true,                  // same as -r
-    "tutorials": "path/to/tutorials", // same as -u path/to/tutorials, default "" (no tutorials)
-    "query": "value",                 // same as -q value, default "" (no query)
-    "private": true,                  // same as -p
-    "lenient": true,                  // same as -l
-    // these can also be included, though you probably wouldn't bother
-    // putting these in conf.json rather than the command line as they cause
-    // JSDoc not to produce documentation.
-    "version": true,                  // same as --version or -v
-    "explain": true,                  // same as -X
-    "test": true,                     // same as -T
-    "help": true,                     // same as --help or -h
-    "verbose": true,                  // same as --verbose, only relevant to tests.
-    "match": "value",                 // same as --match value, only relevant to tests.
-    "nocolor": true                   // same as --nocolor, only relevant to tests
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc","closure"]
 }
 ```
 {% endexample %}
+
+The `tags.allowUnknownTags` property affects how JSDoc handles unrecognized tags. If you set this
+option to `false`, and JSDoc finds a tag that it does not recognize (for example, `@foo`), JSDoc
+logs a warning. By default, this option is set to `true`.
+
+The `tags.dictionaries` property controls which tags JSDoc recognizes, as well as how JSDoc
+interprets the tags that it recognizes. In JSDoc 3.3.0 and later, there are two built-in tag
+dictionaries:
+
++ `jsdoc`: Core JSDoc tags.
++ `closure`: [Closure Compiler tags][closure-tags].
+
+By default, both dictionaries are enabled. Also, by default, the `jsdoc` dictionary is listed first;
+as a result, if the `jsdoc` dictionary handles a tag differently than the `closure` dictionary, the
+`jsdoc` version of the tag takes precedence.
+
+If you are using JSDoc with a Closure Compiler project, and you want to avoid using tags that
+Closure Compiler does not recognize, change the `tags.dictionaries` setting to `["closure"]`. You
+can also change this setting to `["closure","jsdoc"]` if you want to allow core JSDoc tags, but you
+want to ensure that Closure Compiler-specific tags are interpreted as Closure Compiler would
+interpret them.
+
+[closure-tags]: https://developers.google.com/closure/compiler/docs/js-for-compiler#tags

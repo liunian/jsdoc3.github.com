@@ -4,11 +4,15 @@ description: Identify the member that is exported by a JavaScript module.
 related:
     - tags-module.html
     - howto-commonjs-modules.html
+    - howto-amd-modules.html
 ---
 
 ## Syntax
 
 `@exports <moduleName>`
+
+In JSDoc 3.3.0 and later, `<moduleName>` may include the `module:` prefix. In previous versions, you
+must omit this prefix.
 
 
 ## Overview
