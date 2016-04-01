@@ -22,7 +22,7 @@ JSDoc 支持两种类型的标签：
 
 下面示例中，`@param` 是一个块标签，而 `{@link}` 则是一个内联标签：
 
-{% example JSDoc 注释内的块标签和内联标签 %}
+{% example "JSDoc 注释内的块标签和内联标签" %}
 
 ```js
 /**
@@ -38,7 +38,7 @@ Shoe.prototype.setColor = function(color) {
 
 可以像上面那样在描述内使用内联标签，也可以像下面那样在块标签内使用：
 
-{% example 块标签内的内联标签 %}
+{% example "块标签内的内联标签" %}
 
 ```js
 /**
@@ -55,7 +55,7 @@ Shoe.prototype.setColor = function(color) {
 
 多个块标签之间必须换行分隔：
 
-{% example 用换行分隔的块标签 %}
+{% example "用换行分隔的块标签" %}
 
 ```js
 /**
