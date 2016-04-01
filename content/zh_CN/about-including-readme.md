@@ -1,15 +1,30 @@
 ---
-title: 用 JSDoc 3 引入 Readme 文件
-description: 在文档中引入 readme 文件的教程。
+title: 用 JSDoc 3 引入 README 文件
+description: 在文档中引入 README 文件的教程。
 ---
 
-只需简单地在命令行参数中添加上 readme 文件的路径即可把该 readme 文件添加进文档中，并作为根据指定模板生成的网站个首页（`index.html`）。该文件必须是 markdown 文件，且扩展名为 `.md`。
+有两种方式在文档中插入 `README` 文档：
 
-{% example "Including a readme file in your documentation" %}
+1. 在配置文件中扫描路径中添加 `README.md` 文件的路径。JSDoc 会使用找到的第一个 `README.md` 文件。
+2. 用命令行参数 `-R/--readme` 来指定 `README` 文件。JSDoc 3.3.0 及后续版本才有这个功能，`README` 文件的文件名及扩展名都随意，但必须是 Markdown 格式。
+
+如果使用了 `-R/--readme` 参数，那么 JSDoc 将优先使用该参数指定的文件而不是在源码目录里查找到的文件。
+
+JSDoc 的默认模板会把 `README` 生成为 `index.html`。
+
+
+## 示例
+
+{% example "在源码路径中添加 README 文件" %}
 
 ```
-jsdoc C:\path\to\my\JS\project\sourceFiles C:\path\to\my\JS\project\README.md
+jsdoc path/to/js path/to/readme/README.md
 ```
 {% endexample %}
 
-如果 readme 文件被模板成功纳入，那么其内容就会在文件列表前被渲染成 HTML。
+{% example "使用 -R/--readme 参数" %}
+
+```
+jsdoc --readme path/to/readme/README path/to/js
+```
+{% endexample %}

@@ -1,6 +1,6 @@
 ---
 title: JSDoc3 入门
-description: 使用 JSDoc 来为 JavaScript 生成教程的快速入门教程。
+description: 使用 JSDoc 来为 JavaScript 生成文档的快速入门教程。
 ---
 
 ## 始
