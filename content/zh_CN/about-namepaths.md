@@ -1,16 +1,16 @@
 ---
-title: Using namepaths with JSDoc 3
-description: A guide to using namepaths with JSDoc 3.
+title: JSDoc3 的名称路径（namepaths）
+description: JSDoc3 名称路径使用指南。
 related:
     - about-inline-tags.html
     - tags-link.html
 ---
 
-## Namepaths in JSDoc 3
+## JSDoc 3 中的名称路径（Namepaths）
 
-When referring to a JavaScript variable that is elsewhere in your documentation, you must provide a unique identifier that maps to that variable. A namepath provides a way to do so and disambiguate between instance members, static members and inner variables.
+每个 JavaScript 变量需要有唯一标识，这样才能在文档中引用。名称路径除了能唯一标识外，还能区分实例成员、静态成员和内部变量。
 
-{% example "Basic Syntax Examples of Namepaths in JSDoc 3" %}
+{% example "JSDoc3 名称路径基本语法示例" %}
 
 ```
 myFunction
@@ -21,9 +21,9 @@ MyConstructor~innerMember // note that JSDoc 2 uses a dash
 ```
 {% endexample %}
 
-The example below shows: an _instance_ method named "say," an _inner_ function also named "say," and a _static_ method also named "say." These are three distinct methods that all exist independently of one another.
+下面示例中中演示了 3 个完全独立的方法：实例方法 `say`，内部函数 `say` 和静态方法 `say`。
 
-{% example "Use a documentation tag to describe your code." %}
+{% example "使用文档 tag 来描述代码" %}
 
 ```js
 /** @constructor */
@@ -47,9 +47,9 @@ Person.say(); // I'm static.
 ```
 {% endexample %}
 
-You would use three different namepath syntaxes to refer to the three different methods:
+可以使用三中不同的名称路径来引用对应的方法：
 
-{% example "Use a documentation tag to describe your code." %}
+{% example "使用文档 tag 来描述代码" %}
 
 ```
 Person#say  // the instance method named "say."
@@ -58,11 +58,11 @@ Person~say  // the inner method named "say."
 ```
 {% endexample %}
 
-You might wonder why there is a syntax to refer to an inner method when that method isn't directly accessible from outside the function it is defined in. While that is true, and thus the "~" syntax is rarely used, it _is_ possible to return a reference to an inner method from another method inside that container, so it is possible that some object elsewhere in your code might borrow an inner method.
+你可能会好奇为什么给不能外部访问的内部函数提供了引用语法。虽然 `~` 语法很少用，但因为一个方法可以返回一个内部函数的引用，所以可以引用内部函数。
 
-Note that if a constructor has an instance member that is also a constructor, you can simply chain the namepaths together to form a longer namepath:
+如果一个构造器的实例方法也是一个构造器，那么可以简单地链成一个长路径：
 
-{% example "Use a documentation tag to describe your code." %}
+{% example "使用文档 tag 来描述代码" %}
 
 ```js
 /** @constructor */
@@ -81,13 +81,12 @@ i.consider();
 ```
 {% endexample %}
 
-In this case, to refer to the method named "consider," you would use the following namepath:
-`Person#Idea#consider`
-
+对于上面代码，可以使用 `Person#Idea#consider` 来引用 `consider` 方法。
 
 This chaining can be used with any combination of the connecting symbols: `# . ~`
+这种链式可用于 `# . ~` 中任一个符号。
 
-{% example "Special cases: modules, externals and events." %}
+{% example "特别地：模块、外部引用和事件" %}
 
 ```js
 /** A module. Its name is module:foo/bar.
@@ -102,9 +101,9 @@ This chaining can be used with any combination of the connecting symbols: `# . ~
 ```
 {% endexample %}
 
-There are some special cases with namepaths: [@module][module-tag] names are prefixed by "module:", [@external][external-tag] names are prefixed by "external:", and [@event][event-tag] names are prefixed by "event:".
+有一些特别的名称路径，如用 `module:` 标识的 [@module][module-tag]，`@external` 标识的 [@external][external-tag] 和 `event:` 标识的 [@event][event-tag]。
 
-{% example "Namepaths of objects with special characters in the name." %}
+{% example "对象名称含有特殊字符的名称路径" %}
 
 ```js
 /** @namespace */
@@ -138,6 +137,7 @@ var chat = {
 Above is an example of a namespace with "unusual" characters in its member names (the hash character, dashes, even quotes).
 To refer to these you just need quote the names: chat."#channel", chat."#channel"."op:announce-motd", and so on.
 Internal quotes in names should be escaped with backslashes: chat."#channel"."say-\"hello\"".
+上面示例是一个其成员名带有特殊字符（#、- 和引号）的命名空间，引用这些含有特殊字符的成员只需要用双引号包住，如 `chat."#channel"`、`chat."#channel"."op:announce-motd"`，名称自带的引号需要转义，如 `chat."#channel"."say-\"hello\""`。
 
 [event-tag]: tags-event.html
 [external-tag]: tags-external.html
